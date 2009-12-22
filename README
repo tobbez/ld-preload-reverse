@@ -4,5 +4,16 @@ ld-preload-reverse
 ld-preload-reverse is a LD_PRELOAD library that overrides the most common
 functions for writing text to a terminal, and reverses their output.
 
+
+Known issues
+============
+
+ * Currently breaks escape sequences, which makes applications using
+   fwrite_unlocked (ls) crash when using colors.
+
+
+Copying
+=======
+
 ld-preload-reverse is licensed under the Eiffel Forum License 2.
 Copyright 2009, Torbjörn Lönnemark <tobbez@ryara.net>
