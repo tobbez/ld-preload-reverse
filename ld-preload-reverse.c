@@ -209,13 +209,14 @@ int fprintf(FILE *stream, const char *format, ...)
 
 size_t fwrite_unlocked(const void *ptr, size_t size, size_t n, FILE *stream)
 {
-  char *tmp;
   size_t retval = 0;
 
   static size_t (*o_fwrite_unlocked) (const void *ptr, size_t size, size_t n, FILE *stream) = 0;
   o_fwrite_unlocked = (size_t(*)(const void *ptr, size_t size, size_t n, FILE *stream)) dlsym(REAL_LIBC, "fwrite_unlocked");
 
-  if (size == 1 && (stream == stdout || stream == stderr)) {
+  if (size == 1 && n > 0 && (stream == stdout || stream == stderr)) {
+    char *tmp;
+
     tmp = malloc(n + 1);
     strcpy(tmp, (char*)ptr);
 
@@ -224,10 +225,9 @@ size_t fwrite_unlocked(const void *ptr, size_t size, size_t n, FILE *stream)
     retval = (*o_fwrite_unlocked)((void*) tmp, size, n, stream);
 
     free(tmp);
-    return retval;
+  } else {
+    retval = (*o_fwrite_unlocked)(ptr, size, n, stream);
   }
-
-  retval = (*o_fwrite_unlocked)(ptr, size, n, stream);
 
   return retval;  
 }
